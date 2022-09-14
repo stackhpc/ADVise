@@ -24,9 +24,9 @@ import sys
 
 import numpy
 
-from hardware.cardiff import check
-from hardware.cardiff import compare_sets
-from hardware.cardiff import utils
+import check
+import compare_sets
+import utils
 
 
 def print_help():
