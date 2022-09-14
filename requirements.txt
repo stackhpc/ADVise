@@ -1,5 +1,6 @@
 # Add your requirements here like:
-# numpy
+numpy
+pandas
 # scipy>=0.9
 python-openstackclient
 python-ironicclient
@@ -8,4 +9,3 @@ python-ironic-inspector-client
 deepdiff<=3.3.0; python_version < '3.0'
 deepdiff; python_version >= '3.0'
 jinja2
-

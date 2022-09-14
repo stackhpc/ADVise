@@ -15,7 +15,7 @@ import re
 import random
 import shlex
 
-from mungetout import __version__
+from cardiff.mungetout import __version__
 
 __author__ = "Will Szumski"
 __copyright__ = "Will Szumski"

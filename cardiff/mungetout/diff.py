@@ -6,8 +6,8 @@ from pprint import pprint
 
 from deepdiff import DeepDiff
 
-from mungetout import convert
-from mungetout import __version__
+from cardiff.mungetout import convert
+from cardiff.mungetout import __version__
 
 __author__ = "Will Szumski"
 __copyright__ = "Will Szumski"

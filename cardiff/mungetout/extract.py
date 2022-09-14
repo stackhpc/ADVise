@@ -14,7 +14,7 @@ import os
 import shlex
 from subprocess import Popen, PIPE
 
-from mungetout import __version__
+from cardiff.mungetout import __version__
 
 __author__ = "Will Szumski"
 __copyright__ = "Will Szumski"

@@ -24,9 +24,9 @@ import sys
 
 import numpy
 
-import check
-import compare_sets
-import utils
+from cardiff import check
+from cardiff import compare_sets
+from cardiff import utils
 
 
 def print_help():
