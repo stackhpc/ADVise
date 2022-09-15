@@ -21,10 +21,11 @@ import os
 import shutil
 import subprocess
 import sys
+from tokenize import group
 
 import numpy
 
-from cardiff import check
+from cardiff import check, postprocess
 from cardiff import compare_sets
 from cardiff import utils
 
@@ -95,6 +96,7 @@ def compare_type(type_, check_func, title, global_params,
         systems_groups,
         compare_sets.get_hosts_list_from_result(groups))
     compare_sets.print_groups(global_params, groups, title)
+    postprocess.process_groups(groups, title, global_params)
 
 
 def group_systems(global_params, bench_values, unique_id,
@@ -194,7 +196,7 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
     if rampup_value == 0:
         group_systems(global_params, bench_values, unique_id, systems_groups,
                       ignore_list)
-        compare_sets.print_systems_groups(systems_groups)
+        compare_sets.print_systems_groups(systems_groups, global_params)
 
     # It's time to compare performance in each group
     compare_performance(bench_values, unique_id, systems_groups, detail,
