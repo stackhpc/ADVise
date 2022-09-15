@@ -18,7 +18,6 @@ import glob
 import os
 import pprint
 
-
 class Machine:
 
     def __init__(self, name, value):
@@ -51,7 +50,7 @@ def get_hosts_list_from_result(result):
     return systems_list
 
 
-def print_systems_groups(systems_groups):
+def print_systems_groups(systems_groups, global_params):
     total_hosts = 0
     for system in systems_groups:
         total_hosts += len(system)
@@ -62,10 +61,22 @@ def print_systems_groups(systems_groups):
             systems_groups.index(system), len(system)))
         print("-> " + ', '.join(system))
         print()
+    
+    if "output_dir" in global_params.keys():
+        with open("%s/_summary" % global_params["output_dir"], "a") as f:
+            print("The %d systems can be grouped in %d groups of "
+                  "identical hardware" % (total_hosts, len(systems_groups)), file=f)
+            for system in systems_groups:
+                print("Group %d (%d Systems)" % (
+                    systems_groups.index(system), len(system)), file=f)
+                print("-> " + ', '.join(system), file=f)
 
 
 def print_groups(global_params, result, title):
     print("##### %s #####" % title)
+    if "output_dir" in global_params.keys():
+        with open("%s/_summary" % global_params["output_dir"], "a") as f:
+            print("##### %s #####" % title, file=f)
     groups_name = ""
 
     for element in result:
@@ -81,6 +92,11 @@ def print_groups(global_params, result, title):
         groups_name = "%s '%s.def'" % (groups_name, group_name)
         print("%d identical systems :" % (len(group)))
         print(group)
+
+        if "output_dir" in global_params.keys():
+            with open("%s/_summary" % global_params["output_dir"], "a") as f:
+                print("%d identical systems :" % (len(group)), file=f)
+                print(group, file=f)
 
         pprint.pprint(sorted(eval(element)))
 
@@ -103,7 +119,11 @@ def print_groups(global_params, result, title):
                                        title.strip().replace(" ", "_"))):
                 os.remove(filename)
 
-    print("#####" * 2 + "#" * len(title))
+    print("#####" * 2 + "###" * len(title))
+    if "output_dir" in global_params.keys():
+        with open("%s/_summary" % global_params["output_dir"], "a") as f:
+            print("#####" * 2 + "###" * len(title), file=f)
+
 
 
 def compute_similar_hosts_list(systems_groups, new_groups):
