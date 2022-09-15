@@ -4,4 +4,4 @@
 License
 =======
 
-.. literalinclude:: ../LICENSE.rst
+.. literalinclude:: ../LICENSE
