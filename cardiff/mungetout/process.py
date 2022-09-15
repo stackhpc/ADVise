@@ -108,6 +108,7 @@ def _clean_kernel_cmdline(item):
     # Remove unique values that prevent systems from being grouped
     _use_placeholder(cmdline, "BOOTIF")
     _use_placeholder(cmdline, "ip")
+    _use_placeholder(cmdline, "ipa-global-request-id")
     cleaned = _dict2cmdline(cmdline)
     logging.debug("After _clean_kernel_cmdline: {}".format(cleaned))
     return item[0], item[1], item[2], cleaned

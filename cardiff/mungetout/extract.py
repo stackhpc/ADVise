@@ -84,9 +84,9 @@ def main(args):
     args = parse_args(args)
     setup_logging(args.loglevel)
 
-    os.mkdir("extra-hardware")
-    os.mkdir("extra-hardware-filtered")
-    os.mkdir("extra-hardware-json")
+    if not os.path.exists("extra-hardware"): os.mkdir("extra-hardware")
+    if not os.path.exists("extra-hardware-filtered"): os.mkdir("extra-hardware-filtered")
+    if not os.path.exists("extra-hardware-json"): os.mkdir("extra-hardware-json")
 
     for path in args.files:
 
