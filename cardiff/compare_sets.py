@@ -119,10 +119,10 @@ def print_groups(global_params, result, title):
                                        title.strip().replace(" ", "_"))):
                 os.remove(filename)
 
-    print("#####" * 2 + "###" * len(title))
+    print("######" * 2 + "#" * len(title))
     if "output_dir" in global_params.keys():
         with open("%s/_summary" % global_params["output_dir"], "a") as f:
-            print("#####" * 2 + "###" * len(title), file=f)
+            print("######" * 2 + "#" * len(title), file=f)
 
 
 

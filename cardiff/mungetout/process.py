@@ -299,6 +299,13 @@ def clean(extrahw, filter_benchmarks=False, filter_serials=False):
     tuples = filter(lambda x: x, [_modify(tuple(xs)) for xs in extrahw])
     return sorted(list(tuples))
 
+def internal_main(filter_benchmarks, filter_serials, output_format, data):
+    result = clean(data, filter_benchmarks=filter_benchmarks,
+                   filter_serials=filter_serials)
+    if output_format == "eval":
+        print(result)
+    else:
+        json.dump(result, sys.stdout, indent=4, separators=(',', ': '))
 
 def main(args):
     """Main entry point allowing external calls

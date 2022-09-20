@@ -14,6 +14,7 @@ import os
 import shlex
 from subprocess import Popen, PIPE
 
+from cardiff.mungetout import process as m2convert
 from cardiff.mungetout import __version__
 
 __author__ = "Will Szumski"
@@ -23,7 +24,6 @@ __license__ = "apache"
 _logger = logging.getLogger(__name__)
 
 nodes = []
-
 
 def parse_args(args):
     """Parse command line parameters
@@ -38,6 +38,8 @@ def parse_args(args):
         description="Generates extra hardware data in format "
                     "suitable for cardiff ingest from OpenStack "
                     "Ironic inspector")
+    parser.add_argument(
+        '--output_dir')
     parser.add_argument(
         '--version',
         action='version',
@@ -84,9 +86,13 @@ def main(args):
     args = parse_args(args)
     setup_logging(args.loglevel)
 
-    if not os.path.exists("extra-hardware"): os.mkdir("extra-hardware")
-    if not os.path.exists("extra-hardware-filtered"): os.mkdir("extra-hardware-filtered")
-    if not os.path.exists("extra-hardware-json"): os.mkdir("extra-hardware-json")
+    output_dir = args.output_dir
+
+    if not os.path.exists(output_dir): os.mkdir(output_dir)
+
+    if not os.path.exists("%s/extra-hardware" % output_dir): os.mkdir("%s/extra-hardware" % output_dir)
+    if not os.path.exists("%s/extra-hardware-filtered" % output_dir): os.mkdir("%s/extra-hardware-filtered" % output_dir)
+    if not os.path.exists("%s/extra-hardware-json" % output_dir): os.mkdir("%s/extra-hardware-json" % output_dir)
 
     for path in args.files:
 
@@ -98,33 +104,41 @@ def main(args):
 
         extra_data = introspection_data["data"]
 
-        extra_path = os.path.join('extra-hardware', '%s.eval' % node_name)
+        extra_path = os.path.join('%s/extra-hardware' % output_dir, '%s.eval' % node_name)
         filtered_path = os.path.join(
-            'extra-hardware-filtered', '%s.json' % node_name)
-        json_path = os.path.join('extra-hardware-json', '%s.json' % node_name)
+            '%s/extra-hardware-filtered' % output_dir, '%s.json' % node_name)
+        json_path = os.path.join('%s/extra-hardware-json' % output_dir, '%s.json' % node_name)
 
         with open(extra_path, 'w') as f:
-            cmd = 'm2-convert --output-format eval'
-            process = Popen(shlex.split(cmd), stdout=f, stdin=PIPE,
-                            stderr=PIPE)
-            stdout, stderr = process.communicate(
-                input=json.dumps(extra_data).encode("UTF-8"))
-            rc = process.returncode
-            if rc != 0:
-                print((stdout, stderr))
+            orig_stdout = sys.stdout
+            sys.stdout = f
+            m2convert.internal_main(data=extra_data, filter_benchmarks=False, filter_serials=False, output_format="eval")
+            sys.stdout = orig_stdout
+            # cmd = 'm2-convert --output-format eval'
+            # process = Popen(shlex.split(cmd), stdout=f, stdin=PIPE,
+            #                 stderr=PIPE)
+            # stdout, stderr = process.communicate(
+            #     input=json.dumps(extra_data).encode("UTF-8"))
+            # rc = process.returncode
+            # if rc != 0:
+            #     print((stdout, stderr))
 
         with open(json_path, 'w') as f:
             json.dump(extra_data, f)
 
         with open(filtered_path, 'w') as f:
-            cmd = 'm2-convert --filter-benchmarks --filter-serials'
-            process = Popen(shlex.split(cmd), stdout=f, stdin=PIPE,
-                            stderr=PIPE)
-            stdout, stderr = process.communicate(
-                input=json.dumps(extra_data).encode("UTF-8"))
-            rc = process.returncode
-            if rc != 0:
-                print((stdout, stderr))
+            orig_stdout = sys.stdout
+            sys.stdout = f
+            m2convert.internal_main(data=extra_data, filter_benchmarks=True, filter_serials=True, output_format=None)
+            sys.stdout = orig_stdout
+            # cmd = 'm2-convert --filter-benchmarks --filter-serials'
+            # process = Popen(shlex.split(cmd), stdout=f, stdin=PIPE,
+            #                 stderr=PIPE)
+            # stdout, stderr = process.communicate(
+            #     input=json.dumps(extra_data).encode("UTF-8"))
+            # rc = process.returncode
+            # if rc != 0:
+            #     print((stdout, stderr))
 
 
 def run():

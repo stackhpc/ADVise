@@ -199,8 +199,29 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
         compare_sets.print_systems_groups(systems_groups, global_params)
 
     # It's time to compare performance in each group
-    compare_performance(bench_values, unique_id, systems_groups, detail,
+    
+    if ("output_dir" in global_params.keys()):
+        with open("%s/_performance" % global_params["output_dir"], "w") as f:
+            orig_stdout = sys.stdout
+            sys.stdout = f
+
+            total_hosts = 0
+            for system in systems_groups:
+                total_hosts += len(system)
+            print("The %d systems can be grouped in %d groups of "
+                "identical hardware" % (total_hosts, len(systems_groups)))
+            for system in systems_groups:
+                print("Group %d (%d Systems)" % (
+                    systems_groups.index(system), len(system)))
+                print("-> " + ', '.join(system))
+                print()
+            
+            compare_performance(bench_values, unique_id, systems_groups, detail,
                         rampup_value, current_dir)
+            sys.stdout = orig_stdout
+    else:
+        compare_performance(bench_values, unique_id, systems_groups, detail,
+                    rampup_value, current_dir)
     print("##########################################")
     print()
     return bench_values
