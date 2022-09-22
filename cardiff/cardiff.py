@@ -29,6 +29,8 @@ from cardiff import check, postprocess
 from cardiff import compare_sets
 from cardiff import utils
 
+from cardiff.visualise import Visualiser
+
 
 def print_help():
     print('''cardiff
@@ -96,8 +98,9 @@ def compare_type(type_, check_func, title, global_params,
         systems_groups,
         compare_sets.get_hosts_list_from_result(groups))
     compare_sets.print_groups(global_params, groups, title)
+    if "visualise" in global_params.keys():
+        vis.add_result(title, groups)
     postprocess.process_groups(groups, title, global_params)
-
 
 def group_systems(global_params, bench_values, unique_id,
                   systems_groups, ignore_list):
@@ -117,7 +120,6 @@ def group_systems(global_params, bench_values, unique_id,
         if name not in ignore_list:
             compare_type(name, func, title, global_params, bench_values,
                          unique_id, systems_groups)
-
 
 def compare_performance(bench_values, unique_id, systems_groups, detail,
                         rampup_value=0, current_dir=""):
@@ -185,18 +187,30 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
         unique_id = 'uuid'
     else:
         unique_id = 'serial'
-
+    
+    names = utils.find_names(path, pattern)
+        
     # Extracting the host list from the data to get
     # the initial list of hosts. We have here a single group
     # with all the servers
     systems_groups = []
-    systems_groups.append(utils.get_hosts_list(bench_values, unique_id))
+    hosts_list = utils.get_hosts_list(bench_values, unique_id)
+    systems_groups.append(set(hosts_list))
+
+    names_dict = dict(zip(hosts_list, names))
+
+    if "visualise" in global_params.keys():
+        global vis
+        output_dir = ""
+        if "output_dir" in global_params.keys():
+            output_dir = global_params["output_dir"]
+        vis = Visualiser(output_dir, names_dict)
 
     # Let's create groups of similar servers
     if rampup_value == 0:
         group_systems(global_params, bench_values, unique_id, systems_groups,
                       ignore_list)
-        compare_sets.print_systems_groups(systems_groups, global_params)
+        compare_sets.print_systems_groups(systems_groups, global_params, vis)
 
     # It's time to compare performance in each group
     
@@ -224,6 +238,11 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
                     rampup_value, current_dir)
     print("##########################################")
     print()
+    if "visualise" in global_params.keys():
+        if "visualise_dataless" in global_params.keys():
+            vis.visualise(show_dataless=True)
+        else:
+            vis.visualise(show_dataless=False)
     return bench_values
 
 
@@ -489,9 +508,9 @@ def main():
     detail = {'category': '', 'group': '', 'item': ''}
     global_params = {}
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], "hp:l:g:c:i:I:r:o:",
+        opts, _ = getopt.getopt(sys.argv[1:], "hp:l:g:c:i:I:r:o:v:d:",
                                 ['pattern', 'log-level', 'group', 'category',
-                                 'item', "ignore", "rampup", "output_dir"])
+                                 'item', "ignore", "rampup", "output_dir", "visualise", "visualise_dataless"])
     except getopt.GetoptError:
         print("Error: One of the options passed "
               "to the cmdline was not supported")
@@ -547,6 +566,10 @@ def main():
             else:
                 os.mkdir(arg)
             global_params["output_dir"] = arg
+        elif opt in ("-v", "--visualise"):
+            global_params["visualise"] = arg
+        elif opt in ("-d", "--visualise_dataless"):
+            global_params["visualise_dataless"] = arg
 
     if (utils.print_level & utils.Levels.DETAIL) == utils.Levels.DETAIL:
         if not detail['group'] or not detail['category'] or not detail['item']:

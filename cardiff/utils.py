@@ -64,6 +64,16 @@ def do_print(mode, level, string, *args):
     final_args += args
     print(final_string % final_args)
 
+def find_names(path, pattern):
+    names = []
+    # For all the local files
+    for my_file in os.listdir(path):
+        # If the file math the regexp
+        if fnmatch.fnmatch(my_file, pattern):
+            # Let's consider this file
+            names.append(my_file[:-5])
+              
+    return names
 
 def find_file(path, pattern):
     health_data_file = []
@@ -86,13 +96,13 @@ def get_item(output, item, item1, item2, item3):
 
 def dump_item(output, item, item1, item2, item3):
     if item[0] == item1 and item[1] == item2 and item[2] == item3:
-        output.add(item[3])
+        output.append(item[3])
         return
     return
 
 
 def get_hosts_list(bench_values, unique_id):
-    systems = set()
+    systems = []
     for bench in bench_values:
         for line in bench:
             dump_item(systems, line, 'system', 'product', unique_id)

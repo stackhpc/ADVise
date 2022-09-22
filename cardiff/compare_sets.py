@@ -50,7 +50,7 @@ def get_hosts_list_from_result(result):
     return systems_list
 
 
-def print_systems_groups(systems_groups, global_params):
+def print_systems_groups(systems_groups, global_params, vis):
     total_hosts = 0
     for system in systems_groups:
         total_hosts += len(system)
@@ -70,6 +70,8 @@ def print_systems_groups(systems_groups, global_params):
                 print("Group %d (%d Systems)" % (
                     systems_groups.index(system), len(system)), file=f)
                 print("-> " + ', '.join(system), file=f)
+                if "visualise" in global_params.keys():
+                    vis.add_group(systems_groups.index(system), "Group %s" % systems_groups.index(system), list(system))
 
 
 def print_groups(global_params, result, title):
