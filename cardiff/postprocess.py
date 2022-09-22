@@ -123,6 +123,10 @@ def compare_two_groups(A, B, name_A, name_B):
   print("Group B:", name_B)
   print()
 
+  print("=" * 80)
+  print("    Differing Fields    ")
+  print("=" * 80)
+
   print("Tier 1 differences:")
   if unique_A_T1s != set():
     print("A has unique T1 fields:")
@@ -150,6 +154,10 @@ def compare_two_groups(A, B, name_A, name_B):
     print_T3s(sub_unique_B_T3s)
   print()
 
+  print("=" * 80)
+  print("    Shared Fields    ")
+  print("=" * 80)
+
   print("Shared Tier 1 fields:")
   print_T1s(shared_T1s)
   print()
@@ -161,7 +169,7 @@ def compare_two_groups(A, B, name_A, name_B):
   print("Shared Tier 3 fields:")
   print_T3s(shared_T3s)
       
-def process_groups(groups, title, global_params):
+def process_groups(groups, title, global_params, names_dict):
   if "output_dir" in global_params.keys() and len(groups) > 1:
     path = "%s/Paired_Comparisons" % (global_params["output_dir"])
     if not os.path.exists(path): os.mkdir(path)
@@ -170,14 +178,14 @@ def process_groups(groups, title, global_params):
     for groupA in groups:
         home_name = ""
         for name in groups[groupA]:
-            home_name += name + "_"
+            home_name += names_dict[name] + "_"
         path = "%s/Paired_Comparisons/%s/%s" % (global_params["output_dir"], title.strip().replace(" ", "_"), home_name[:-1])
         if not os.path.exists(path): os.mkdir(path)
         for groupB in groups:
             if groups[groupA] != groups[groupB]:
                 away_name = ""
                 for name in groups[groupB]:
-                    away_name += name + "_"
+                    away_name += names_dict[name] + "_"
 
                 orig_stdout = sys.stdout
                 

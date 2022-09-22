@@ -36,7 +36,8 @@ class Visualiser():
     results = {}
     groups = []
     output_dir = ""
-    fully_unique_fields = set()
+    shared_fields = set()
+    dataless_fields = set()
     names_dict = {}
 
     def __init__(self, output_dir, names_dict):
@@ -57,18 +58,20 @@ class Visualiser():
     def extract_connections(self):
         for item in self.results:
             label = item
-            self.fully_unique_fields.add(label)
             for group in self.groups:
                 for element in self.results[item]:
-                    dataless = False
                     if eval(element) == set():
                         dataless = True
+                        self.dataless_fields.add(label)
+                    else:
+                        dataless = False
+                        self.shared_fields.add(label)
                     systems = self.results[item][element]
                     if group.serials[0] in systems:
                         for other_group in self.groups:
-                            if group.id != other_group.id and other_group.serials[0] in systems:
-                                if label in self.fully_unique_fields:
-                                    self.fully_unique_fields.remove(label)
+                            if group.id != other_group.id and other_group.serials[0] not in systems:
+                                if label in self.shared_fields:
+                                    self.shared_fields.remove(label)
                                 if label not in other_group.connections:
                                     if group.id < other_group.id:
                                         group.add_connection(label, other_group.id, dataless)
@@ -90,12 +93,12 @@ class Visualiser():
 
         self.extract_connections()
 
-        label_unique = "Hover over a group to see the systems it contains.\nEdges represent shared fields.\nFully unique fields:\n- " + "\n- ".join(self.fully_unique_fields)
+        label_unique = "Hover over a group to see the systems it contains.\nEdges represent differing fields.\n\nFully shared fields:\n- " + "\n- ".join(self.shared_fields) + "\n\nDataless fields:\n- " + "\n- ".join(self.dataless_fields)
         net.add_node(
                 n_id = -1,
                 label = label_unique,
                 color='grey',
-                value=len(self.fully_unique_fields),
+                value=len(self.shared_fields),
                 x=0,
                 y=0,
                 shape='text')

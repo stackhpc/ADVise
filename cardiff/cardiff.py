@@ -91,7 +91,8 @@ def compare_disks(bench_values, unique_id, systems_groups):
 
 
 def compare_type(type_, check_func, title, global_params,
-                 bench_values, unique_id, systems_groups):
+                 bench_values, unique_id, systems_groups,
+                 names_dict):
     systems = utils.find_sub_element(bench_values, unique_id, type_)
     groups = check_func(systems, unique_id)
     compare_sets.compute_similar_hosts_list(
@@ -100,10 +101,10 @@ def compare_type(type_, check_func, title, global_params,
     compare_sets.print_groups(global_params, groups, title)
     if "visualise" in global_params.keys():
         vis.add_result(title, groups)
-    postprocess.process_groups(groups, title, global_params)
+    postprocess.process_groups(groups, title, global_params, names_dict)
 
 def group_systems(global_params, bench_values, unique_id,
-                  systems_groups, ignore_list):
+                  systems_groups, ignore_list, names_dict):
     for name, func, title in (
             ('hpa', check.hpa, "HPA Controller"),
             ('disk', check.physical_hpa_disks, "HPA Disks"),
@@ -119,7 +120,7 @@ def group_systems(global_params, bench_values, unique_id,
             ('cpu', check.cpu, "Processors")):
         if name not in ignore_list:
             compare_type(name, func, title, global_params, bench_values,
-                         unique_id, systems_groups)
+                         unique_id, systems_groups, names_dict)
 
 def compare_performance(bench_values, unique_id, systems_groups, detail,
                         rampup_value=0, current_dir=""):
@@ -209,7 +210,7 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
     # Let's create groups of similar servers
     if rampup_value == 0:
         group_systems(global_params, bench_values, unique_id, systems_groups,
-                      ignore_list)
+                      ignore_list, names_dict)
         compare_sets.print_systems_groups(systems_groups, global_params, vis)
 
     # It's time to compare performance in each group

@@ -16,7 +16,7 @@
 import fnmatch
 import math
 import os
-
+import re
 
 class Levels:
     INFO = 1 << 0
@@ -69,7 +69,7 @@ def find_names(path, pattern):
     # For all the local files
     for my_file in os.listdir(path):
         # If the file math the regexp
-        if fnmatch.fnmatch(my_file, pattern):
+        if re.search(pattern, my_file):
             # Let's consider this file
             names.append(my_file[:-5])
               
@@ -80,7 +80,7 @@ def find_file(path, pattern):
     # For all the local files
     for my_file in os.listdir(path):
         # If the file math the regexp
-        if fnmatch.fnmatch(my_file, pattern):
+        if re.search(pattern, my_file):
             # Let's consider this file
             health_data_file.append(path + "/" + my_file)
 
