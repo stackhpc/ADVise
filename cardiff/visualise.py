@@ -1,5 +1,6 @@
 from pyvis.network import Network
 
+
 class Visualiser():
     fields = {
         "HPA Controller": ('#be1313', 0.1, 'curvedCW'),
@@ -34,6 +35,7 @@ class Visualiser():
                 self.connections[label][0].add(target)
 
     results = {}
+    performance_stats = {}
     groups = []
     output_dir = ""
     shared_fields = set()
@@ -55,6 +57,26 @@ class Visualiser():
         group = Visualiser.Group(id, title, serials)
         self.groups.append(group)
 
+    def compare_serials(self, group, other_group, systems, label, dataless):
+        if (group.id != other_group.id
+                and other_group.serials[0] not in systems):
+            if label in self.shared_fields:
+                self.shared_fields.remove(label)
+            if label not in other_group.connections:
+                if group.id < other_group.id:
+                    group.add_connection(
+                        label, other_group.id, dataless)
+                else:
+                    other_group.add_connection(
+                        label, group.id, dataless)
+            elif group.id not in other_group.connections[label][0]:
+                if group.id < other_group.id:
+                    group.add_connection(
+                        label, other_group.id, dataless)
+                else:
+                    other_group.add_connection(
+                        label, group.id, dataless)
+
     def extract_connections(self):
         for item in self.results:
             label = item
@@ -69,55 +91,48 @@ class Visualiser():
                     systems = self.results[item][element]
                     if group.serials[0] in systems:
                         for other_group in self.groups:
-                            if group.id != other_group.id and other_group.serials[0] not in systems:
-                                if label in self.shared_fields:
-                                    self.shared_fields.remove(label)
-                                if label not in other_group.connections:
-                                    if group.id < other_group.id:
-                                        group.add_connection(label, other_group.id, dataless)
-                                    else:
-                                        other_group.add_connection(label, group.id, dataless)
-                                elif group.id not in other_group.connections[label][0]:
-                                    if group.id < other_group.id:
-                                        group.add_connection(label, other_group.id, dataless)
-                                    else:
-                                        other_group.add_connection(label, group.id, dataless)
-                            
+                            self.compare_serials(group, other_group, systems,
+                                                 label, dataless)
 
     def print_connections(self, file):
         for group in self.groups:
             print(group.title, group.connections, file=file)
 
-    def visualise(self, show_dataless):
+    def differences_network(self):
         net = Network(directed=True, width="1600px", height="900px")
 
         self.extract_connections()
 
-        label_unique = "Hover over a group to see the systems it contains.\nEdges represent differing fields.\n\nFully shared fields:\n- " + "\n- ".join(self.shared_fields) + "\n\nDataless fields:\n- " + "\n- ".join(self.dataless_fields)
+        label_unique = ("Hover over a group to see the systems it contains.\n"
+                        "Edges represent differing fields.\n\n"
+                        "Fully shared fields:\n- ") + \
+            "\n- ".join(self.shared_fields) + \
+            "\n\nDataless fields:\n- " + \
+            "\n- ".join(self.dataless_fields)
         net.add_node(
-                n_id = -1,
-                label = label_unique,
-                color='grey',
-                value=len(self.shared_fields),
-                x=0,
-                y=0,
-                shape='text')
+            n_id=-1,
+            label=label_unique,
+            color='grey',
+            value=len(self.shared_fields),
+            x=0,
+            y=0,
+            shape='text')
 
         for group in self.groups:
             names = []
             for serial in group.serials:
                 names.append("%s - %s" % (self.names_dict[serial], serial))
             net.add_node(
-                n_id = group.id,
-                label = group.title,
-                title = "\n".join(names),
+                n_id=group.id,
+                label=group.title,
+                title="\n".join(names),
                 color='grey',
                 value=len(group.serials))
 
         for group in self.groups:
             for connection in group.connections:
                 info = group.connections[connection]
-                if (info[1] == False or (info[1] == True and show_dataless == True)):
+                if (info[1] == False):
                     count = 0
                     width = 1.5
                     font_size = 9
@@ -126,23 +141,25 @@ class Visualiser():
                         font_size = 5
                     for target in info[0]:
                         net.add_edge(
-                            source = group.id,
-                            to = target,
-                            width = width,
-                            label = connection,
-                            color = self.fields[connection][0],
-                            smooth = {'type': self.fields[connection][2], 'roundness': self.fields[connection][1]},
-                            font = {'size': font_size, 'align': 'middle'},
-                            arrows = {'to': {'enabled':False}},
-                            dashes = group.connections[connection][1],
-                            hoverWidth = 0.05)
+                            source=group.id,
+                            to=target,
+                            width=width,
+                            label=connection,
+                            color=self.fields[connection][0],
+                            smooth={
+                                'type': self.fields[connection][2],
+                                'roundness': self.fields[connection][1]},
+                            font={'size': font_size, 'align': 'middle'},
+                            arrows={'to': {'enabled': False}},
+                            dashes=group.connections[connection][1],
+                            hoverWidth=0.05)
                         count += 1
 
         net.toggle_physics(False)
-        net.show("%s/_result.html" % self.output_dir)
+        try:
+            net.show("%s/_result.html" % self.output_dir)
+        except Exception as e:
+            print(e)
 
-
-
-
-
-
+    def visualise(self):
+        self.differences_network()
