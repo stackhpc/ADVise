@@ -38,7 +38,9 @@ class Visualiser():
     performance_stats = {}
     groups = []
     output_dir = ""
-    shared_fields = set()
+    shared_fields = {"HPA Controller", "HPA Disks", "Megaraid Controller",
+                     "Megaraid Disks", "AHCI Controller", "System", "Firmware",
+                     "DDR Timing", "Network Interfaces", "Processors"}
     dataless_fields = set()
     names_dict = {}
 
@@ -85,9 +87,10 @@ class Visualiser():
                     if eval(element) == set():
                         dataless = True
                         self.dataless_fields.add(label)
+                        if label in self.shared_fields:
+                            self.shared_fields.remove(label)
                     else:
                         dataless = False
-                        self.shared_fields.add(label)
                     systems = self.results[item][element]
                     if group.serials[0] in systems:
                         for other_group in self.groups:

@@ -91,6 +91,8 @@ def print_groups(global_params, result, title):
         for host in group:
             group_name = "%s_%s" % (group_name, host.strip())
 
+        group_name = group_name[:100]
+
         groups_name = "%s '%s.def'" % (groups_name, group_name)
         print("%d identical systems :" % (len(group)))
         print(group)

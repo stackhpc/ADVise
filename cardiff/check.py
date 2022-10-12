@@ -16,6 +16,7 @@
 # under the License.
 
 import re
+import sys
 
 import numpy
 from pandas import DataFrame
@@ -153,7 +154,7 @@ def prepare_detail(detail_options, group_number, category, item, details,
 
 
 def network_perf(system_list, unique_id, group_number, detail_options,
-                 rampup_value=0, current_dir=""):
+                 global_params, names_dict, rampup_value=0, current_dir=""):
     have_net_data = False
     modes = ['bandwidth', 'requests_per_sec']
     sets = search_item(system_list, unique_id, "network", r"(.*)", [], modes)
@@ -186,6 +187,9 @@ def network_perf(system_list, unique_id, group_number, detail_options,
             if have_net_data is False:
                 print()
                 print("Group %d : Checking network disks perf" % group_number)
+                with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+                    print(file=f)
+                    print("Group %d : Checking network disks perf" % group_number, file=f)
                 have_net_data = True
             consistent = []
             curious = []
@@ -195,8 +199,8 @@ def network_perf(system_list, unique_id, group_number, detail_options,
             tolerance_min = 2
 
             print_perf(tolerance_min, tolerance_max, df.transpose()[net], df,
-                       mode, net, consistent, curious, unstable, "",
-                       rampup_value, current_dir)
+                       mode, net, global_params, names_dict, consistent,
+                       curious, unstable, "", rampup_value, current_dir)
             if mode == 'bandwidth':
                 unit = "MB/sec"
             else:
@@ -214,7 +218,8 @@ def network_perf(system_list, unique_id, group_number, detail_options,
 
 
 def logical_disks_perf(system_list, unique_id, group_number, detail_options,
-                       perf_unit, rampup_value=0, current_dir=""):
+                       global_params, names_dict, perf_unit, rampup_value=0,
+                       current_dir=""):
     have_disk_data = False
     sets = search_item(system_list, unique_id, "disk", r"[a-z]d(\S+)", [],
                        ['simultaneous', 'standalone'])
@@ -226,9 +231,6 @@ def logical_disks_perf(system_list, unique_id, group_number, detail_options,
             if perf[2] not in modes and perf_unit in perf[2]:
                 modes.append(perf[2])
 
-    if modes:
-        return
-
     for mode in sorted(modes):
         results = {}
         for system in sets:
@@ -238,7 +240,7 @@ def logical_disks_perf(system_list, unique_id, group_number, detail_options,
                 if perf[2] == mode:
                     if not perf[1] in disks:
                         disks.append(perf[1])
-                    series.append(int(perf[3]))
+                    series.append(int(round(float(perf[3]))))
             results[system] = Series(series, index=disks)
 
         df = DataFrame(results)
@@ -248,6 +250,9 @@ def logical_disks_perf(system_list, unique_id, group_number, detail_options,
             if have_disk_data is False:
                 print()
                 print("Group %d : Checking logical disks perf" % group_number)
+                with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+                    print(file=f)
+                    print("Group %d : Checking logical disks perf" % group_number, file=f)
                 have_disk_data = True
             consistent = []
             curious = []
@@ -262,8 +267,9 @@ def logical_disks_perf(system_list, unique_id, group_number, detail_options,
                 tolerance_max = 15
 
             print_perf(tolerance_min, tolerance_max, df.transpose()[disk], df,
-                       mode, disk, consistent, curious, unstable,
-                       "-%s" % perf_unit, rampup_value, current_dir)
+                       mode, disk, global_params, names_dict, consistent,
+                       curious, unstable, "-%s" % perf_unit, rampup_value,
+                       current_dir)
 
             prepare_detail(detail_options, group_number, mode, disk, details,
                            matched_category)
@@ -326,8 +332,8 @@ def cpu(system_list, unique_id):
 
 
 def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
-               consistent=None, curious=None, unstable=None,
-               sub_graph="", rampup_value=0, current_dir=""):
+               global_params, names_dict, consistent=None, curious=None,
+               unstable=None, sub_graph="", rampup_value=0, current_dir=""):
     # Tolerance_min represents the min where variance
     # shall be considered (in %)
     # Tolerance_max represents the maximum that variance
@@ -363,6 +369,16 @@ def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
                        variance_tolerance, mean_group, tolerance_max)
         utils.do_print(mode, utils.Levels.ERROR,
                        "%-12s : Group performance : UNSTABLE", title)
+        with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+            orig_stdout = sys.stdout
+            sys.stdout = f
+            utils.do_print(mode, utils.Levels.ERROR,
+                       "%-12s : Group's variance is too important : %7.2f%% "
+                       "of %7.2f whereas limit is set to %3.2f%%", title,
+                       variance_tolerance, mean_group, tolerance_max)
+            utils.do_print(mode, utils.Levels.ERROR,
+                       "%-12s : Group performance : UNSTABLE", title)
+            sys.stdout = orig_stdout
         for host in df.columns:
             if host not in curious:
                 unstable.append(host)
@@ -377,24 +393,54 @@ def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
             if variance_tolerance > tolerance_min:
                 if mean_host > max_group:
                     curious_performance = True
+                    percent_above = 100 * (mean_host - max_group) / max_group
                     utils.do_print(
                         mode, utils.Levels.WARNING,
                         "%-12s : %s : Curious overperformance  %7.2f : "
                         "min_allow_group = %.2f, mean_group = %.2f "
-                        "max_allow_group = %.2f", title, host, mean_host,
-                        min_group, mean_group, max_group)
+                        "max_allow_group = %.2f, "
+                        "%3.2f%% above max", title, names_dict[host],
+                        mean_host, min_group, mean_group, max_group,
+                        percent_above)
+                    with open("%s/_perf_summary" % global_params["output_dir"],
+                              "a") as f:
+                        orig_stdout = sys.stdout
+                        sys.stdout = f
+                        utils.do_print(
+                            mode, utils.Levels.WARNING,
+                            "%-12s : %s : Curious overperformance  %7.2f : "
+                            "min_allow_group = %.2f, mean_group = %.2f "
+                            "max_allow_group = %.2f, "
+                            "%3.2f%% above max", title, names_dict[host],
+                            mean_host, min_group, mean_group, max_group,
+                            percent_above)
+                        sys.stdout = orig_stdout
                     if host not in curious:
                         curious.append(host)
                         if host in consistent:
                             consistent.remove(host)
                 elif mean_host < min_group:
                     curious_performance = True
+                    percent_below = 100 * (min_group - mean_host) / min_group
                     utils.do_print(
                         mode, utils.Levels.WARNING,
                         "%-12s : %s : Curious underperformance %7.2f : "
                         "min_allow_group = %.2f, mean_group = %.2f "
-                        "max_allow_group = %.2f", title, host, mean_host,
-                        min_group, mean_group, max_group)
+                        "max_allow_group = %.2f, "
+                        "%3.2f%% below min", title, names_dict[host],
+                        mean_host, min_group, mean_group, max_group,
+                        percent_below)
+                    with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+                        orig_stdout = sys.stdout
+                        sys.stdout = f
+                        utils.do_print(
+                            mode, utils.Levels.WARNING,
+                            "%-12s : %s : Curious underperformance %7.2f : "
+                            "min_allow_group = %.2f, mean_group = %.2f "
+                            "max_allow_group = %.2f, "
+                            "%3.2f%% below min", title, names_dict[host], mean_host,
+                            min_group, mean_group, max_group, percent_below)
+                        sys.stdout = orig_stdout
                     if host not in curious:
                         curious.append(host)
                         if host in consistent:
@@ -480,7 +526,7 @@ def print_summary(mode, array, array_name, unit, df, item_value=None):
 
 
 def cpu_perf(system_list, unique_id, group_number, detail_options,
-             rampup_value=0, current_dir=""):
+             global_params, names_dict, rampup_value=0, current_dir=""):
     have_cpu_data = False
     host_cpu_list = search_item(system_list, unique_id, "cpu", "(.*)", [],
                                 ['product'])
@@ -545,9 +591,13 @@ def cpu_perf(system_list, unique_id, group_number, detail_options,
             if have_cpu_data is False:
                 print()
                 print("Group %d : Checking CPU perf" % group_number)
+                with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+                    print(file=f)
+                    print("Group %d : Checking CPU perf" % group_number, file=f)
                 have_cpu_data = True
-            print_perf(2, 7, df.transpose()[cpu], df, mode, cpu, consistent,
-                       curious, unstable, "", rampup_value, current_dir)
+            print_perf(2, 7, df.transpose()[cpu], df, mode, cpu, global_params,
+                       names_dict, consistent, curious, unstable, "",
+                       rampup_value, current_dir)
             prepare_detail(detail_options, group_number, mode, cpu, details,
                            matched_category)
 
@@ -577,7 +627,8 @@ def cpu_perf(system_list, unique_id, group_number, detail_options,
 
             cpu_eff = DataFrame(efficiency)
             print_perf(1, 2, cpu_eff.transpose()[mode_text], cpu_eff, mode,
-                       mode_text, consistent, curious, unstable)
+                       mode_text, global_params, names_dict, consistent,
+                       curious, unstable)
             prepare_detail(detail_options, group_number, mode, mode_text,
                            details, matched_category)
 
@@ -589,7 +640,7 @@ def cpu_perf(system_list, unique_id, group_number, detail_options,
 
 
 def memory_perf(system_list, unique_id, group_number, detail_options,
-                rampup_value=0, current_dir=""):
+                global_params, names_dict, rampup_value=0, current_dir=""):
     have_memory_data = False
     modes = ['1K', '4K', '1M', '16M', '128M', '256M', '1G', '2G']
     sets = search_item(system_list, unique_id, "cpu", "(.*)", [], modes)
@@ -645,11 +696,14 @@ def memory_perf(system_list, unique_id, group_number, detail_options,
             if have_memory_data is False:
                 print()
                 print("Group %d : Checking Memory perf" % group_number)
+                with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+                    print(file=f)
+                    print("Group %d : Checking Memory perf" % group_number, file=f)
                 have_memory_data = True
 
             print_perf(1, 7, df.transpose()[memory], df, real_mode, memory,
-                       consistent, curious, unstable, "", rampup_value,
-                       current_dir)
+                       global_params, names_dict, consistent, curious,
+                       unstable, "", rampup_value, current_dir)
             matched_category = []
             prepare_detail(detail_options, group_number, mode, memory,
                            details, matched_category)
@@ -691,8 +745,8 @@ def memory_perf(system_list, unique_id, group_number, detail_options,
 
                 for memory in memory_eff.transpose().columns:
                     print_perf(2, 10, memory_eff.transpose()[memory],
-                               memory_eff, real_mode, memory, consistent,
-                               curious, unstable)
+                               memory_eff, real_mode, memory, global_params,
+                               names_dict, consistent, curious, unstable)
                     matched_category = []
                     prepare_detail(detail_options, group_number, mode,
                                    memory, details, matched_category)

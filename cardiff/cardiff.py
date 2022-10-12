@@ -125,32 +125,37 @@ def group_systems(global_params, bench_values, unique_id,
 
 
 def compare_performance(bench_values, unique_id, systems_groups, detail,
-                        rampup_value=0, current_dir=""):
+                        global_params, names_dict, rampup_value=0,
+                        current_dir=""):
     for group in systems_groups:
         systems = utils.find_sub_element(bench_values, unique_id,
                                          'disk', group)
         check.logical_disks_perf(systems, unique_id,
                                  systems_groups.index(group),
-                                 detail, "KBps", rampup_value, current_dir)
+                                 detail, global_params, names_dict, "KBps",
+                                 rampup_value, current_dir)
         check.logical_disks_perf(systems, unique_id,
                                  systems_groups.index(group),
-                                 detail, "IOps", rampup_value, current_dir)
+                                 detail, global_params, names_dict, "IOps",
+                                 rampup_value, current_dir)
 
     for group in systems_groups:
         systems = utils.find_sub_element(bench_values, unique_id, 'cpu', group)
         check.cpu_perf(systems, unique_id, systems_groups.index(group), detail,
-                       rampup_value, current_dir)
+                       global_params, names_dict, rampup_value, current_dir)
 
     for group in systems_groups:
         systems = utils.find_sub_element(bench_values, unique_id, 'cpu', group)
         check.memory_perf(systems, unique_id, systems_groups.index(group),
-                          detail, rampup_value, current_dir)
+                          detail, global_params, names_dict, rampup_value,
+                          current_dir)
 
     for group in systems_groups:
         systems = utils.find_sub_element(bench_values, unique_id, 'network',
                                          group)
         check.network_perf(systems, unique_id, systems_groups.index(group),
-                           detail, rampup_value, current_dir)
+                           detail, global_params, names_dict, rampup_value,
+                           current_dir)
 
 
 def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
@@ -233,12 +238,23 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
                 print("-> " + ', '.join(system))
                 print()
 
+            with open("%s/_perf_summary" % global_params["output_dir"], "a") as f2:
+                print("The %d systems can be grouped in %d groups of "
+                  "identical hardware" % (total_hosts, len(systems_groups)), file=f2)
+                for system in systems_groups:
+                    print("Group %d (%d Systems)" % (
+                        systems_groups.index(system), len(system)), file=f2)
+                    print("-> " + ', '.join(system), file=f2)
+                    print(file=f2)
+
             compare_performance(bench_values, unique_id, systems_groups,
-                                detail, rampup_value, current_dir)
+                                detail, global_params, names_dict,
+                                rampup_value, current_dir)
             sys.stdout = orig_stdout
     else:
         compare_performance(bench_values, unique_id, systems_groups, detail,
-                            rampup_value, current_dir)
+                            global_params, names_dict, rampup_value,
+                            current_dir)
     print("##########################################")
     print()
     if "visualise" in global_params.keys():

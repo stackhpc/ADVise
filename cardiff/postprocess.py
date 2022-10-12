@@ -186,7 +186,7 @@ def paired_comparison(groups, names_dict, title, global_params):
         path = "%s/Paired_Comparisons/%s/%s" % (
             global_params["output_dir"],
             title.strip().replace(" ", "_"),
-            home_name[:-1])
+            home_name[:50])
         if not os.path.exists(path):
             os.mkdir(path)
         for groupB in groups:
@@ -198,7 +198,7 @@ def paired_comparison(groups, names_dict, title, global_params):
                 with open("%s/Paired_Comparisons/%s/%s/%svs_%spostproccess.txt"
                           % (global_params["output_dir"],
                              title.strip().replace(" ", "_"),
-                             home_name[:-1], home_name, away_name), "w") as f:
+                             home_name[:50], home_name[:50], away_name[:50]), "w") as f:
                     sys.stdout = f
                     compare_two_groups(eval(groupA), eval(
                         groupB), home_name[:-1], away_name[:-1])
