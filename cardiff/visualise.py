@@ -60,31 +60,19 @@ class Visualiser():
         else:
             self.varperf_groups[group_number][index] = item
 
-    def add_item_overperf(self, item, group_number, mode, title, host, value):
+    def add_item_overperf(self, item, group_number, mode, title):
         index = "%s %s" % (mode, title)
         if group_number not in self.overperf_groups:
-            self.overperf_groups[group_number] = {
-                index: (item, [(host, value)])}
+            self.overperf_groups[group_number] = {index: item}
         else:
-            if index not in self.overperf_groups[group_number]:
-                self.overperf_groups[group_number][index] = (
-                    item, [(host, value)])
-            else:
-                self.overperf_groups[group_number][index][1].append(
-                    (host, value))
+            self.overperf_groups[group_number][index] = item
 
-    def add_item_underperf(self, item, group_number, mode, title, host, value):
+    def add_item_underperf(self, item, group_number, mode, title):
         index = "%s %s" % (mode, title)
         if group_number not in self.underperf_groups:
-            self.underperf_groups[group_number] = {
-                index: (item, [(host, value)])}
+            self.underperf_groups[group_number] = {index: item}
         else:
-            if index not in self.underperf_groups[group_number]:
-                self.underperf_groups[group_number][index] = (
-                    item, [(host, value)])
-            else:
-                self.underperf_groups[group_number][index][1].append(
-                    (host, value))
+            self.underperf_groups[group_number][index] = item
 
     def __init__(self, output_dir, names_dict):
         self.output_dir = output_dir
@@ -311,8 +299,13 @@ class Visualiser():
             element = self.varperf_groups[group_number]
             for title in element:
                 data = element[title]
-                fig = px.histogram(data.round(2), title="Group %s %s" % (
-                    group_number, title), nbins=100, text_auto=True)
+                new_index = {}
+                for serial in data.index:
+                    if serial in self.names_dict:
+                        new_index[serial] = self.names_dict[serial]
+                data.rename(index=new_index, inplace=True)
+                fig = px.box(data.round(2), title="Group %s %s" % (
+                    group_number, title), orientation='h', hover_data=[data.index])
                 output.append(dcc.Graph(
                     id='example-graph-%s' % i,
                     figure=fig
@@ -324,37 +317,34 @@ class Visualiser():
             element = self.overperf_groups[group_number]
             for title in element:
                 data = element[title]
-                fig = px.histogram(data[0].round(2), title="Group %s %s" % (
-                    group_number, title), nbins=100, text_auto=True)
+                new_index = {}
+                for serial in data.index:
+                    if serial in self.names_dict:
+                        new_index[serial] = self.names_dict[serial]
+                data.rename(index=new_index, inplace=True)
+                fig = px.box(data.round(2), title="Group %s %s" % (
+                    group_number, title), orientation='h', hover_data=[data.index])
                 output.append(dcc.Graph(
                     id='example-graph-%s' % i,
                     figure=fig
                 ))
-                output.append(
-                    html.H3(children='''The following nodes have
-                                      overperformed:'''))
-                for value in data[1]:
-                    output.append("%s: %s" % (value[0], round(value[1], 2)))
-                    output.append(html.Br())
                 i += 1
 
         output.append(html.H1(children='Curious Underperformance'))
         for group_number in self.underperf_groups:
             element = self.underperf_groups[group_number]
             for title in element:
-                data = element[title]
-                fig = px.histogram(data[0].round(2), title="Group %s %s" % (
-                    group_number, title), nbins=100, text_auto=True)
+                new_index = {}
+                for serial in data.index:
+                    if serial in self.names_dict:
+                        new_index[serial] = self.names_dict[serial]
+                data.rename(index=new_index, inplace=True)
+                fig = px.box(data.round(2), title="Group %s %s" % (
+                    group_number, title), orientation='h', hover_data=[data.index])
                 output.append(dcc.Graph(
                     id='example-graph-%s' % i,
                     figure=fig
                 ))
-                output.append(
-                    html.H3(children='''The following nodes have
-                                      underperformed:'''))
-                for value in data[1]:
-                    output.append("%s: %s\n" % (value[0], round(value[1], 2)))
-                    output.append(html.Br())
                 i += 1
 
         app.layout = html.Div(children=output)

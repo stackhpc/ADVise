@@ -402,8 +402,7 @@ def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
             if variance_tolerance > tolerance_min:
                 if mean_host > max_group:
                     if vis:
-                        vis.add_item_overperf(item, group_number, mode, title,
-                                              names_dict[host], mean_host)
+                        vis.add_item_overperf(item, group_number, mode, title)
                     curious_performance = True
                     percent_above = 100 * (mean_host - max_group) / max_group
                     utils.do_print(
@@ -433,8 +432,7 @@ def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
                             consistent.remove(host)
                 elif mean_host < min_group:
                     if vis:
-                        vis.add_item_underperf(item, group_number, mode, title,
-                                               names_dict[host], mean_host)
+                        vis.add_item_underperf(item, group_number, mode, title)
                     curious_performance = True
                     percent_below = 100 * (min_group - mean_host) / min_group
                     utils.do_print(
