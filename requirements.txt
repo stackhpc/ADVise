@@ -9,3 +9,6 @@ python-ironic-inspector-client
 deepdiff<=3.3.0; python_version < '3.0'
 deepdiff; python_version >= '3.0'
 jinja2
+pyvis
+dash
+plotly

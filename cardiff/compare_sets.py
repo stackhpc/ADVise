@@ -18,6 +18,7 @@ import glob
 import os
 import pprint
 
+
 class Machine:
 
     def __init__(self, name, value):
@@ -61,17 +62,19 @@ def print_systems_groups(systems_groups, global_params, vis):
             systems_groups.index(system), len(system)))
         print("-> " + ', '.join(system))
         print()
-    
+
     if "output_dir" in global_params.keys():
         with open("%s/_summary" % global_params["output_dir"], "a") as f:
             print("The %d systems can be grouped in %d groups of "
-                  "identical hardware" % (total_hosts, len(systems_groups)), file=f)
+                  "identical hardware" % (total_hosts, len(systems_groups)),
+                  file=f)
             for system in systems_groups:
                 print("Group %d (%d Systems)" % (
                     systems_groups.index(system), len(system)), file=f)
                 print("-> " + ', '.join(system), file=f)
                 if "visualise" in global_params.keys():
-                    vis.add_group(systems_groups.index(system), "Group %s" % systems_groups.index(system), list(system))
+                    vis.add_group(systems_groups.index(system),
+                                  "Group %s" % systems_groups.index(system), list(system))
 
 
 def print_groups(global_params, result, title):
@@ -105,29 +108,28 @@ def print_groups(global_params, result, title):
         pprint.pprint(sorted(eval(element)))
 
         # But always save it to a file for diffing
-        if "output_dir" in global_params.keys():
-            with open("%s.def" % group_name, "w") as fout:
-                pprint.pprint(sorted(eval(element)), fout)
-        print()
+        # if "output_dir" in global_params.keys():
+        #     with open("%s.def" % group_name, "w") as fout:
+        #         pprint.pprint(sorted(eval(element)), fout)
+        # print()
 
-    if "output_dir" in global_params.keys():
-        if len(result) > 1:
-            output_file = "%s/%s.diff" % (global_params["output_dir"],
-                                          title.strip().replace(" ", "_"))
-            os.system("diff -ub --from-file %s > '%s'" %
-                      (groups_name, output_file))
-        else:
+    # if "output_dir" in global_params.keys():
+    #     if len(result) > 1:
+    #         output_file = "%s/%s.diff" % (global_params["output_dir"],
+    #                                       title.strip().replace(" ", "_"))
+    #         os.system("diff -ub --from-file %s > '%s'" %
+    #                   (groups_name, output_file))
+    #     else:
             # If no difference exists, we can kill the def files
-            for filename in glob.glob("%s/%s*.def" %
-                                      (global_params["output_dir"],
-                                       title.strip().replace(" ", "_"))):
-                os.remove(filename)
+            # for filename in glob.glob("%s/%s*.def" %
+            #                           (global_params["output_dir"],
+            #                            title.strip().replace(" ", "_"))):
+            #     os.remove(filename)
 
     print("######" * 2 + "#" * len(title))
     if "output_dir" in global_params.keys():
         with open("%s/_summary" % global_params["output_dir"], "a") as f:
             print("######" * 2 + "#" * len(title), file=f)
-
 
 
 def compute_similar_hosts_list(systems_groups, new_groups):
