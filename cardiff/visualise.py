@@ -334,6 +334,7 @@ class Visualiser():
         for group_number in self.underperf_groups:
             element = self.underperf_groups[group_number]
             for title in element:
+                data = element[title]
                 new_index = {}
                 for serial in data.index:
                     if serial in self.names_dict:
@@ -346,6 +347,7 @@ class Visualiser():
                     figure=fig
                 ))
                 i += 1
+
 
         app.layout = html.Div(children=output)
 
