@@ -1,6 +1,7 @@
 from tokenize import group
 from pyvis.network import Network
 from dash import Dash, html, dcc
+from dash.dependencies import Output, Input
 import plotly.express as px
 import pandas as pd
 import numpy as np
@@ -48,6 +49,8 @@ class Visualiser():
                      "Megaraid Disks", "AHCI Controller", "System", "Firmware",
                      "DDR Timing", "Network Interfaces", "Processors"}
     names_dict = {}
+    dropdowns = []
+    networks = {}
 
     overperf_groups = {}
     underperf_groups = {}
@@ -86,10 +89,6 @@ class Visualiser():
             print(item, self.results[item], file=file)
 
     def add_group(self, id, title, serials):
-        group = Visualiser.Group(id, title, serials)
-        self.groups.append(group)
-
-    def add_label_group(self, id, title, serials):
         group = Visualiser.Group(id, title, serials)
         self.groups.append(group)
 
@@ -181,28 +180,15 @@ class Visualiser():
                         arrows={'to': {'enabled': False}},
                         hoverWidth=0.05)
 
-    def print_button_to_eof(self, field, file):
-        print("<button onclick=\"location.href = '%s/%s_result.html';"
-              "\" class=\"float-left submit-button\" >%s</button>" %
-              (self.output_dir, field.replace(" ", "_"), field), file=file)
-
-    def add_buttons(self):
+    def record_networks(self):
+        with open("%s/All_result.html" % self.output_dir, "r") as f:
+            self.networks["All"] = f.read()
         for field in self.fields:
             if (eval(list(self.results[field].keys())[0]) != set()
                     and len(self.results[field]) != 1):
                 with open("%s/%s_result.html" % (self.output_dir,
-                          field.replace(" ", "_")), "a") as f:
-                    for other_field in self.fields:
-                        if (eval(list(self.results[other_field].keys())[0]) !=
-                                set() and len(self.results[other_field]) != 1):
-                            self.print_button_to_eof(other_field, f)
-                    self.print_button_to_eof("All", f)
-        with open("%s/All_result.html" % self.output_dir, "a") as f:
-            for field in self.fields:
-                if (eval(list(self.results[field].keys())[0]) != set()
-                        and len(self.results[field]) != 1):
-                    self.print_button_to_eof(field, f)
-            self.print_button_to_eof("All", f)
+                          field.replace(" ", "_")), "r") as f:
+                    self.networks[field] = f.read()
 
     def separate_networks(self):
         for field in self.fields:
@@ -271,12 +257,24 @@ class Visualiser():
     def visualise_hardware(self):
         self.combined_network()
         self.separate_networks()
-        self.add_buttons()
+        # self.add_buttons()
 
     def visualise_performance(self):
         app = Dash(__name__)
 
-        output = [
+        self.record_networks()
+
+        output = [html.H1(children='ADVise Hardware Differences')]
+
+        for field in self.networks:
+            output.append(html.H2(field))
+            output.append(
+                html.Div(html.Iframe(
+                id='network_graph_%s' % field,
+                srcDoc=self.networks[field],
+                style={"height": "650px", "width": "100%"})))
+
+        output.extend([
             html.H1(children='ADVise Performance Results'),
 
             html.Div(html.P([
@@ -291,7 +289,7 @@ class Visualiser():
                 '''3. Curious Underperformance - results where individual nodes
                  have underperformed compared to the rest of the group.'''
             ])),
-        ]
+        ])
 
         i = 0
         output.append(html.H1(children='High Variance'))
@@ -348,8 +346,11 @@ class Visualiser():
                 ))
                 i += 1
 
-
         app.layout = html.Div(children=output)
+
+        # @app.callback(Output("network_graph", "srcDoc"), Input("input", "value"), prevent_initial_call=True)
+        # def update_output_div(input_value):
+        #     return input_value
 
         app.run_server(debug=True)
 
