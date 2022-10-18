@@ -1,11 +1,11 @@
 =============
-cardiff
+ADVise
 =============
 
-.. image:: https://travis-ci.com/stackhpc/cardiff.svg?branch=master
-    :target: https://travis-ci.com/stackhpc/cardiff
+.. image:: https://travis-ci.com/stackhpc/ADVise.svg?branch=master
+    :target: https://travis-ci.com/stackhpc/ADVise
 
-* Mungetout: Convert from Ironic Inspector introspection format to cardiff format. Now you can mungetout...
+* Mungetout: Convert from Ironic Inspector introspection format to ADVise format. Now you can mungetout...
 
 
 Dependencies
@@ -17,11 +17,11 @@ Dependencies
 Usage
 =====
 
-Install ``cardiff`` as follows:
+Install ``ADVise`` as follows:
 
 .. code-block::
 
-  pip install git+https://github.com/stackhpc/cardiff
+  pip install git+https://github.com/stackhpc/ADVise
   mkdir working-dir && cd working-dir
 
 To Download the introspection data (or use kayobe overcloud introspection data save instead):
@@ -36,7 +36,7 @@ It can be useful to limit the number of nodes for debugging purposes:
 
   m2-collect --limit 4 -vv
 
-To extract the introspection data and process it ready for cardiff input:
+To extract the introspection data and process it ready for ADVise input:
 
 .. code-block::
 
@@ -45,20 +45,20 @@ To extract the introspection data and process it ready for cardiff input:
 This will have created the directories: ``extra-hardware``, ``extra-hardware-json``
 and ``extra-hardware-filtered``. The contents of these files is as follows:
 
-- extra-hardware: input for cardiff
+- extra-hardware: input for ADVise
 - extra-hardware-json: unmodified extra-hardware data
 - extra-hardware-filtered: extra-hardware data stripped of all unique IDs. This
   can be used with the ``diff`` tool to look for differences between nodes.
-  You can identify a group of similar servers using cardiff. Select one node
+  You can identify a group of similar servers using ADVise. Select one node
   from this group and one outlier and do a ``diff`` between them.
   You will have to grep for the system id in the extra-hardware data. The file
   names are consistent across all of the directories.
 
-Running ``cardiff`` on the output:
+Running ``ADVise`` on the output:
 
 .. code-block::
 
-  cardiff -I ipmi -p 'extra-hardware/*.eval' -o '/results'
+  advise -I ipmi -p 'extra-hardware/*.eval' -o '/results'
   
 Examples
 ========

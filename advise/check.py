@@ -25,9 +25,9 @@ import numpy
 from pandas import DataFrame
 from pandas import Series
 
-from cardiff import compare_sets, visualise
-from cardiff import perf_cpu_tables
-from cardiff import utils
+from advise import compare_sets, visualise
+from advise import perf_cpu_tables
+from advise import utils
 
 
 def search_item(system_list, unique_id, item, regexp, exclude_list=[],

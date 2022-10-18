@@ -25,15 +25,15 @@ from tokenize import group
 
 import numpy
 
-from cardiff import check, postprocess
-from cardiff import compare_sets
-from cardiff import utils
+from advise import check, postprocess
+from advise import compare_sets
+from advise import utils
 
-from cardiff.visualise import Visualiser
+from advise.visualise import Visualiser
 
 
 def print_help():
-    print('''cardiff
+    print('''ADVise
 
 -h --help                           : Print this help
 -p <pattern> or --pattern <pattern> : A pattern in regexp to select input files
@@ -63,13 +63,13 @@ def print_help():
                                         a comma
 
 Examples:
-$ cardiff.py -p 'sample/*.hw' -l DETAIL -g '1' -c 'loops_per_sec' \
+$ advise.py -p 'sample/*.hw' -l DETAIL -g '1' -c 'loops_per_sec' \
     -i 'logical_1.*'
-$ cardiff.py -p 'sample/*.hw' -l DETAIL -g '1' -c 'standalone_rand.*_4k_IOps' \
+$ advise.py -p 'sample/*.hw' -l DETAIL -g '1' -c 'standalone_rand.*_4k_IOps' \
     -i 'sd.*'
-$ cardiff.py -p 'sample/*.hw' -l DETAIL -g '0' -c '1G' -i '.*'
-$ cardiff.py -p '*hw' -I disk,cpu -o plop
-$ cardiff.py -r '/var/lib/edeploy/health/dahc/cpu_load/2014_09_15-12h17'
+$ advise.py -p 'sample/*.hw' -l DETAIL -g '0' -c '1G' -i '.*'
+$ advise.py -p '*hw' -I disk,cpu -o plop
+$ advise.py -r '/var/lib/edeploy/health/dahc/cpu_load/2014_09_15-12h17'
 ''')
 
 

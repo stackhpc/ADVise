@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Generates a directory tree containing extra hardware data suitable
-for ingest by cardiff
+for ingest by ADVise
 """
 from __future__ import division, print_function, absolute_import
 
@@ -14,8 +14,8 @@ import os
 import shlex
 from subprocess import Popen, PIPE
 
-from cardiff.mungetout import process as m2convert
-from cardiff.mungetout import __version__
+from advise.mungetout import process as m2convert
+from advise.mungetout import __version__
 
 __author__ = "Will Szumski"
 __copyright__ = "Will Szumski"
@@ -36,7 +36,7 @@ def parse_args(args):
     """
     parser = argparse.ArgumentParser(
         description="Generates extra hardware data in format "
-                    "suitable for cardiff ingest from OpenStack "
+                    "suitable for ADVise ingest from OpenStack "
                     "Ironic inspector")
     parser.add_argument(
         '--output_dir')

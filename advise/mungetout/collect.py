@@ -15,7 +15,7 @@ import re
 import random
 import shlex
 
-from cardiff.mungetout import __version__
+from advise.mungetout import __version__
 
 __author__ = "Will Szumski"
 __copyright__ = "Will Szumski"
@@ -37,7 +37,7 @@ def parse_args(args):
     """
     parser = argparse.ArgumentParser(
         description="Generates extra hardware data in format "
-                    "suitable for cardiff ingest from OpenStack "
+                    "suitable for ADVise ingest from OpenStack "
                     "Ironic inspector")
     parser.add_argument(
         '--version',

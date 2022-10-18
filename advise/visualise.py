@@ -277,7 +277,7 @@ class Visualiser():
         app = Dash(__name__)
 
         output = [
-            html.H1(children='Cardiff Performance Results'),
+            html.H1(children='ADVise Performance Results'),
 
             html.Div(html.P([
                 'This page is split into three sections:',

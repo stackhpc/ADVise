@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Converts Openstack Ironic introspection data to a format accepted
-by cardiff from python hardware.
+by ADVise from python hardware.
 """
 from __future__ import division, print_function, absolute_import
 
@@ -12,7 +12,7 @@ import json
 import sys
 import re
 
-from cardiff.mungetout import __version__
+from advise.mungetout import __version__
 
 __author__ = "Will Szumski"
 __copyright__ = "Will Szumski"
@@ -21,7 +21,7 @@ __license__ = "apache"
 _logger = logging.getLogger(__name__)
 
 
-_cardiff_blacklist = [
+_advise_blacklist = [
     # (u'hpa', u'slot_0', u'total_cache_memory_available', u'0.3')
     'total_cache_memory_available',
     # Strip out serial numbers e.g from ssacli for HP servers:
@@ -169,7 +169,7 @@ def _filter_ipmi_sensor_data(item):
 
 
 def _filter_generic_field(item):
-    if len(item) < 4 or item[2] not in _cardiff_blacklist:
+    if len(item) < 4 or item[2] not in _advise_blacklist:
         return item
     logging.debug("_filter_generic_field removing: {}".format(item))
     return None
@@ -220,7 +220,7 @@ def parse_args(args):
     """
     parser = argparse.ArgumentParser(
         description="Munges OpenStack Ironic introspection data to "
-                    "a format accepted by cardiff")
+                    "a format accepted by ADVise")
     parser.add_argument(
         '--version',
         action='version',

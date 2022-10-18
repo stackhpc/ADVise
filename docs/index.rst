@@ -1,8 +1,8 @@
 =============
-cardiff
+ADVise
 =============
 
-This is the documentation of **cardiff**.
+This is the documentation of **ADVise**.
 
 .. note::
 
