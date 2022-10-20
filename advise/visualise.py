@@ -1,10 +1,6 @@
-from tokenize import group
 from pyvis.network import Network
 from dash import Dash, html, dcc
-from dash.dependencies import Output, Input
 import plotly.express as px
-import pandas as pd
-import numpy as np
 
 
 class Visualiser():
@@ -257,7 +253,6 @@ class Visualiser():
     def visualise_hardware(self):
         self.combined_network()
         self.separate_networks()
-        # self.add_buttons()
 
     def visualise_performance(self):
         app = Dash(__name__)
@@ -270,9 +265,9 @@ class Visualiser():
             output.append(html.H2(field))
             output.append(
                 html.Div(html.Iframe(
-                id='network_graph_%s' % field,
-                srcDoc=self.networks[field],
-                style={"height": "650px", "width": "100%"})))
+                    id='network_graph_%s' % field,
+                    srcDoc=self.networks[field],
+                    style={"height": "650px", "width": "100%"})))
 
         output.extend([
             html.H1(children='ADVise Performance Results'),
@@ -292,7 +287,7 @@ class Visualiser():
         ])
 
         i = 0
-        output.append(html.H1(children='High Variance'))
+        output.append(html.H2(children='High Variance'))
         for group_number in self.varperf_groups:
             element = self.varperf_groups[group_number]
             for title in element:
@@ -303,14 +298,15 @@ class Visualiser():
                         new_index[serial] = self.names_dict[serial]
                 data.rename(index=new_index, inplace=True)
                 fig = px.box(data.round(2), title="Group %s %s" % (
-                    group_number, title), orientation='h', hover_data=[data.index])
+                    group_number, title), orientation='h',
+                    hover_data=[data.index])
                 output.append(dcc.Graph(
                     id='example-graph-%s' % i,
                     figure=fig
                 ))
                 i += 1
 
-        output.append(html.H1(children='Curious Overperformance'))
+        output.append(html.H2(children='Curious Overperformance'))
         for group_number in self.overperf_groups:
             element = self.overperf_groups[group_number]
             for title in element:
@@ -321,14 +317,15 @@ class Visualiser():
                         new_index[serial] = self.names_dict[serial]
                 data.rename(index=new_index, inplace=True)
                 fig = px.box(data.round(2), title="Group %s %s" % (
-                    group_number, title), orientation='h', hover_data=[data.index])
+                    group_number, title), orientation='h',
+                    hover_data=[data.index])
                 output.append(dcc.Graph(
                     id='example-graph-%s' % i,
                     figure=fig
                 ))
                 i += 1
 
-        output.append(html.H1(children='Curious Underperformance'))
+        output.append(html.H2(children='Curious Underperformance'))
         for group_number in self.underperf_groups:
             element = self.underperf_groups[group_number]
             for title in element:
@@ -339,7 +336,8 @@ class Visualiser():
                         new_index[serial] = self.names_dict[serial]
                 data.rename(index=new_index, inplace=True)
                 fig = px.box(data.round(2), title="Group %s %s" % (
-                    group_number, title), orientation='h', hover_data=[data.index])
+                    group_number, title), orientation='h',
+                    hover_data=[data.index])
                 output.append(dcc.Graph(
                     id='example-graph-%s' % i,
                     figure=fig
@@ -347,10 +345,6 @@ class Visualiser():
                 i += 1
 
         app.layout = html.Div(children=output)
-
-        # @app.callback(Output("network_graph", "srcDoc"), Input("input", "value"), prevent_initial_call=True)
-        # def update_output_div(input_value):
-        #     return input_value
 
         app.run_server(debug=True)
 

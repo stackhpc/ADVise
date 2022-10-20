@@ -14,8 +14,6 @@
 # under the License.
 
 import collections
-import glob
-import os
 import pprint
 
 

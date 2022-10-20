@@ -11,8 +11,6 @@ import logging
 import json
 import sys
 import os
-import shlex
-from subprocess import Popen, PIPE
 
 from advise.mungetout import process as m2convert
 from advise.mungetout import __version__

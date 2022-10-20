@@ -18,14 +18,11 @@
 import re
 import sys
 
-from dash import Dash, html, dcc
-import plotly.express as px
-
 import numpy
 from pandas import DataFrame
 from pandas import Series
 
-from advise import compare_sets, visualise
+from advise import compare_sets
 from advise import perf_cpu_tables
 from advise import utils
 
