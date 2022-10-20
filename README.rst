@@ -65,10 +65,12 @@ ADVise
 Note
 ====
 
-ADVise revives the deprecated pacakge ``cardiff`` from https://github.com/redhat-cip/hardware/. 
+ADVise revives the pacakge ``cardiff`` from https://github.com/redhat-cip/hardware/. 
+
 * Author: Erwan Velu <erwan@enovance.com>
 
-ADVide integrates the package ``mungetout`` from https://github.com/stackhpc/mungetout.
+ADVise integrates the package ``mungetout`` from https://github.com/stackhpc/mungetout.
+
 * Author: Will Szumski <will@stackhpc.com>
 
 This project has been set up using PyScaffold 2.5.11. For details and usage
