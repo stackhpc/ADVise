@@ -17,6 +17,7 @@
 
 import getopt
 import glob
+import pickle
 import os
 import shutil
 import subprocess
@@ -98,8 +99,7 @@ def compare_type(type_, check_func, title, global_params,
         systems_groups,
         compare_sets.get_hosts_list_from_result(groups))
     compare_sets.print_groups(global_params, groups, title)
-    if "visualise" in global_params.keys():
-        vis.add_result(title, groups)
+    vis.add_result(title, groups)
     postprocess.process_groups(groups, title, global_params, names_dict)
 
 
@@ -207,12 +207,12 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
 
     names_dict = dict(zip(hosts_list, names))
 
-    if "visualise" in global_params.keys():
-        global vis
-        output_dir = ""
-        if "output_dir" in global_params.keys():
-            output_dir = global_params["output_dir"]
-        vis = Visualiser(output_dir, names_dict)
+    global vis
+    output_dir = ""
+    if "output_dir" in global_params.keys():
+        output_dir = global_params["output_dir"]
+    vis = Visualiser(output_dir)
+    vis.names_dict = names_dict
 
     # Let's create groups of similar servers
     if rampup_value == 0:
@@ -223,7 +223,8 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
     # It's time to compare performance in each group
 
     if ("output_dir" in global_params.keys()):
-        with open("%s/_performance" % global_params["output_dir"], "w") as f:
+        with open("%s/results/_performance" % global_params["output_dir"],
+                  "w") as f:
             orig_stdout = sys.stdout
             sys.stdout = f
 
@@ -238,7 +239,7 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
                 print("-> " + ', '.join(system))
                 print()
 
-            with open("%s/_perf_summary" % global_params["output_dir"],
+            with open("%s/results/_perf_summary" % global_params["output_dir"],
                       "a") as f2:
                 print("The %d systems can be grouped in %d groups of "
                       "identical hardware" % (total_hosts,
@@ -259,8 +260,8 @@ def analyze_data(global_params, pattern, ignore_list, detail, rampup_value=0,
                             current_dir)
     print("##########################################")
     print()
-    if "visualise" in global_params.keys():
-        vis.visualise()
+    vis.save_data()
+
     return bench_values
 
 
@@ -526,10 +527,9 @@ def main():
     detail = {'category': '', 'group': '', 'item': ''}
     global_params = {}
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], "hp:l:g:c:i:I:r:o:v:",
+        opts, _ = getopt.getopt(sys.argv[1:], "hp:l:g:c:i:I:r:o:",
                                 ['pattern', 'log-level', 'group', 'category',
-                                 'item', "ignore", "rampup", "output_dir",
-                                 "visualise"])
+                                 'item', "ignore", "rampup", "output_dir"])
     except getopt.GetoptError:
         print("Error: One of the options passed "
               "to the cmdline was not supported")
@@ -585,8 +585,6 @@ def main():
             else:
                 os.mkdir(arg)
             global_params["output_dir"] = arg
-        elif opt in ("-v", "--visualise"):
-            global_params["visualise"] = arg
 
     if (utils.print_level & utils.Levels.DETAIL) == utils.Levels.DETAIL:
         if not detail['group'] or not detail['category'] or not detail['item']:

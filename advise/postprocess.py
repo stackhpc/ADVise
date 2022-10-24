@@ -183,7 +183,7 @@ def paired_comparison(groups, names_dict, title, global_params):
         home_name = ""
         for name in groups[groupA]:
             home_name += names_dict[name] + "_"
-        path = "%s/Paired_Comparisons/%s/%s" % (
+        path = "%s/results/Paired_Comparisons/%s/%s" % (
             global_params["output_dir"],
             title.strip().replace(" ", "_"),
             home_name[:50])
@@ -195,10 +195,11 @@ def paired_comparison(groups, names_dict, title, global_params):
                 for name in groups[groupB]:
                     away_name += names_dict[name] + "_"
                 orig_stdout = sys.stdout
-                with open("%s/Paired_Comparisons/%s/%s/%svs_%spostproccess.txt"
+                with open("%s/results/Paired_Comparisons/%s/%s/%svs_%s.txt"
                           % (global_params["output_dir"],
                              title.strip().replace(" ", "_"),
-                             home_name[:50], home_name[:50], away_name[:50]), "w") as f:
+                             home_name[:50], home_name[:50], away_name[:50]),
+                             "w") as f:
                     sys.stdout = f
                     compare_two_groups(eval(groupA), eval(
                         groupB), home_name[:-1], away_name[:-1])
@@ -207,10 +208,10 @@ def paired_comparison(groups, names_dict, title, global_params):
 
 def process_groups(groups, title, global_params, names_dict):
     if "output_dir" in global_params.keys() and len(groups) > 1:
-        path = "%s/Paired_Comparisons" % (global_params["output_dir"])
+        path = "%s/results/Paired_Comparisons" % (global_params["output_dir"])
         if not os.path.exists(path):
             os.mkdir(path)
-        path = "%s/Paired_Comparisons/%s" % (
+        path = "%s/results/Paired_Comparisons/%s" % (
             global_params["output_dir"], title.strip().replace(" ", "_"))
         if not os.path.exists(path):
             os.mkdir(path)

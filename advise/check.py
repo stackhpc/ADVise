@@ -154,7 +154,8 @@ def prepare_detail(detail_options, group_number, category, item, details,
 
 
 def network_perf(system_list, unique_id, group_number, detail_options,
-                 global_params, names_dict, vis, rampup_value=0, current_dir=""):
+                 global_params, names_dict, vis, rampup_value=0,
+                 current_dir=""):
     have_net_data = False
     modes = ['bandwidth', 'requests_per_sec']
     sets = search_item(system_list, unique_id, "network", r"(.*)", [], modes)
@@ -187,7 +188,8 @@ def network_perf(system_list, unique_id, group_number, detail_options,
             if have_net_data is False:
                 print()
                 print("Group %d : Checking network disks perf" % group_number)
-                with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+                with open("%s/results/_perf_summary"
+                          % global_params["output_dir"], "a") as f:
                     print(file=f)
                     print("Group %d : Checking network disks perf" %
                           group_number, file=f)
@@ -200,8 +202,9 @@ def network_perf(system_list, unique_id, group_number, detail_options,
             tolerance_min = 2
 
             print_perf(tolerance_min, tolerance_max, df.transpose()[net], df,
-                       mode, net, global_params, names_dict, vis, group_number, consistent,
-                       curious, unstable, "", rampup_value, current_dir)
+                       mode, net, global_params, names_dict, vis, group_number,
+                       consistent, curious, unstable, "", rampup_value,
+                       current_dir)
             if mode == 'bandwidth':
                 unit = "MB/sec"
             else:
@@ -219,8 +222,8 @@ def network_perf(system_list, unique_id, group_number, detail_options,
 
 
 def logical_disks_perf(system_list, unique_id, group_number, detail_options,
-                       global_params, names_dict, vis, perf_unit, rampup_value=0,
-                       current_dir=""):
+                       global_params, names_dict, vis, perf_unit,
+                       rampup_value=0, current_dir=""):
     have_disk_data = False
     sets = search_item(system_list, unique_id, "disk", r"[a-z]d(\S+)", [],
                        ['simultaneous', 'standalone'])
@@ -251,7 +254,8 @@ def logical_disks_perf(system_list, unique_id, group_number, detail_options,
             if have_disk_data is False:
                 print()
                 print("Group %d : Checking logical disks perf" % group_number)
-                with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+                with open("%s/results/_perf_summary"
+                          % global_params["output_dir"], "a") as f:
                     print(file=f)
                     print("Group %d : Checking logical disks perf" %
                           group_number, file=f)
@@ -269,9 +273,9 @@ def logical_disks_perf(system_list, unique_id, group_number, detail_options,
                 tolerance_max = 15
 
             print_perf(tolerance_min, tolerance_max, df.transpose()[disk], df,
-                       mode, disk, global_params, names_dict, vis, group_number, consistent,
-                       curious, unstable, "-%s" % perf_unit, rampup_value,
-                       current_dir)
+                       mode, disk, global_params, names_dict, vis,
+                       group_number, consistent, curious, unstable,
+                       "-%s" % perf_unit, rampup_value, current_dir)
 
             prepare_detail(detail_options, group_number, mode, disk, details,
                            matched_category)
@@ -334,8 +338,9 @@ def cpu(system_list, unique_id):
 
 
 def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
-               global_params, names_dict, vis, group_number, consistent=None, curious=None,
-               unstable=None, sub_graph="", rampup_value=0, current_dir=""):
+               global_params, names_dict, vis, group_number, consistent=None,
+               curious=None, unstable=None, sub_graph="", rampup_value=0,
+               current_dir=""):
     # Tolerance_min represents the min where variance
     # shall be considered (in %)
     # Tolerance_max represents the maximum that variance
@@ -371,7 +376,8 @@ def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
                        variance_tolerance, mean_group, tolerance_max)
         utils.do_print(mode, utils.Levels.ERROR,
                        "%-12s : Group performance : UNSTABLE", title)
-        with open("%s/_perf_summary" % global_params["output_dir"], "a") as f:
+        with open("%s/results/_perf_summary" % global_params["output_dir"],
+                  "a") as f:
             orig_stdout = sys.stdout
             sys.stdout = f
             utils.do_print(mode, utils.Levels.ERROR,
@@ -410,8 +416,8 @@ def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
                         "%3.2f%% above max", title, names_dict[host],
                         mean_host, min_group, mean_group, max_group,
                         percent_above)
-                    with open("%s/_perf_summary" % global_params["output_dir"],
-                              "a") as f:
+                    with open("%s/results/_perf_summary"
+                              % global_params["output_dir"], "a") as f:
                         orig_stdout = sys.stdout
                         sys.stdout = f
                         utils.do_print(
@@ -440,8 +446,8 @@ def print_perf(tolerance_min, tolerance_max, item, df, mode, title,
                         "%3.2f%% below min", title, names_dict[host],
                         mean_host, min_group, mean_group, max_group,
                         percent_below)
-                    with open("%s/_perf_summary" % global_params["output_dir"],
-                              "a") as f:
+                    with open("%s/results/_perf_summary"
+                              % global_params["output_dir"], "a") as f:
                         orig_stdout = sys.stdout
                         sys.stdout = f
                         utils.do_print(
@@ -603,8 +609,8 @@ def cpu_perf(system_list, unique_id, group_number, detail_options,
             if have_cpu_data is False:
                 print()
                 print("Group %d : Checking CPU perf" % group_number)
-                with open("%s/_perf_summary" % global_params["output_dir"],
-                          "a") as f:
+                with open("%s/results/_perf_summary"
+                          % global_params["output_dir"], "a") as f:
                     print(file=f)
                     print("Group %d : Checking CPU perf" %
                           group_number, file=f)
@@ -711,8 +717,8 @@ def memory_perf(system_list, unique_id, group_number, detail_options,
             if have_memory_data is False:
                 print()
                 print("Group %d : Checking Memory perf" % group_number)
-                with open("%s/_perf_summary" % global_params["output_dir"],
-                          "a") as f:
+                with open("%s/results/_perf_summary"
+                          % global_params["output_dir"], "a") as f:
                     print(file=f)
                     print("Group %d : Checking Memory perf" %
                           group_number, file=f)

@@ -3,9 +3,11 @@ ADVise (formerly cardiff)
 ==========
 
 cardiff:
-* Erwan Velu <erwan@enovance.com>
 
-ADVise
+* Erwan Velu <https://github.com/ErwanAliasr1>
+
+ADVise:
+
 * Matt Crees <mattc@stackhpc.com>
 
 ==========

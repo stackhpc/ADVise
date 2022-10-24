@@ -62,7 +62,8 @@ def print_systems_groups(systems_groups, global_params, vis):
         print()
 
     if "output_dir" in global_params.keys():
-        with open("%s/_summary" % global_params["output_dir"], "a") as f:
+        with open("%s/results/_summary" % global_params["output_dir"],
+                  "a") as f:
             print("The %d systems can be grouped in %d groups of "
                   "identical hardware" % (total_hosts, len(systems_groups)),
                   file=f)
@@ -70,15 +71,16 @@ def print_systems_groups(systems_groups, global_params, vis):
                 print("Group %d (%d Systems)" % (
                     systems_groups.index(system), len(system)), file=f)
                 print("-> " + ', '.join(system), file=f)
-                if "visualise" in global_params.keys():
-                    vis.add_group(systems_groups.index(system),
-                                  "Group %s" % systems_groups.index(system), list(system))
+                vis.add_group(systems_groups.index(system),
+                              "Group %s" % systems_groups.index(system),
+                              list(system))
 
 
 def print_groups(global_params, result, title):
     print("##### %s #####" % title)
     if "output_dir" in global_params.keys():
-        with open("%s/_summary" % global_params["output_dir"], "a") as f:
+        with open("%s/results/_summary" % global_params["output_dir"],
+                  "a") as f:
             print("##### %s #####" % title, file=f)
     groups_name = ""
 
@@ -87,7 +89,8 @@ def print_groups(global_params, result, title):
         group_name = title.strip().replace(" ", "_")
 
         if "output_dir" in global_params.keys():
-            group_name = "%s/%s" % (global_params["output_dir"], group_name)
+            group_name = "%s/results/%s" % (global_params["output_dir"],
+                                            group_name)
 
         for host in group:
             group_name = "%s_%s" % (group_name, host.strip())
@@ -99,7 +102,8 @@ def print_groups(global_params, result, title):
         print(group)
 
         if "output_dir" in global_params.keys():
-            with open("%s/_summary" % global_params["output_dir"], "a") as f:
+            with open("%s/results/_summary" % global_params["output_dir"],
+                      "a") as f:
                 print("%d identical systems :" % (len(group)), file=f)
                 print(group, file=f)
 
@@ -126,7 +130,8 @@ def print_groups(global_params, result, title):
 
     print("######" * 2 + "#" * len(title))
     if "output_dir" in global_params.keys():
-        with open("%s/_summary" % global_params["output_dir"], "a") as f:
+        with open("%s/results/_summary" % global_params["output_dir"],
+                  "a") as f:
             print("######" * 2 + "#" * len(title), file=f)
 
 
