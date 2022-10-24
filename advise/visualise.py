@@ -462,6 +462,7 @@ class Visualiser():
                             },
                             style_cell={'textAlign': 'left'},
                             style_table={'overflowX': 'scroll'},
+                            style_header = {'display': 'none'},
                             fill_width=False
                         )],
                         style={'width': '50%', 'display': 'inline-block'}
@@ -477,6 +478,7 @@ class Visualiser():
                             },
                             style_cell={'textAlign': 'left'},
                             style_table={'overflowX': 'scroll'},
+                            style_header = {'display': 'none'},
                             fill_width=False
                         )],
                         style={'width': '50%', 'display': 'inline-block'}
