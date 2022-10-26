@@ -59,19 +59,22 @@ ADVise
 
 .. code-block::
 
-  advise -I ipmi -p 'extra-hardware/*.eval' -o '/results'
+  advise-process -I ipmi -p 'data/extra-hardware/*.eval' -o '/review'
 
+.. code-block::
+
+  advise-visualise -output_dir '/review' 
 
 Note
 ====
 
-ADVise revives the pacakge ``cardiff`` from https://github.com/redhat-cip/hardware/. 
+ADVise revives the package ``cardiff`` from https://github.com/redhat-cip/hardware/. 
 
-* Author: Erwan Velu <erwan@enovance.com>
+* Author: `Erwan Velu <https://github.com/ErwanAliasr1>`_
 
 ADVise integrates the package ``mungetout`` from https://github.com/stackhpc/mungetout.
 
-* Author: Will Szumski <will@stackhpc.com>
+* Author: `Will Szumski <https://github.com/jovial>`_
 
 This project has been set up using PyScaffold 2.5.11. For details and usage
 information on PyScaffold see http://pyscaffold.readthedocs.org/.
