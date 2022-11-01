@@ -59,11 +59,25 @@ ADVise
 
 .. code-block::
 
-  advise-process -I ipmi -p 'data/extra-hardware/*.eval' -o '/review'
+  advise-process -I ipmi -p 'path-to-output_dir/data/extra-hardware/*.eval' -o 'path-to-output_dir'
+
+The ADVise tool will output a selection of results found under ``output_dir/results`` these include:
+
+* ``.html`` files to display network visualisations of any hardware differences.
+
+The folder ``Paired_Comparisons`` which contains information on the shared and differing fields found between the systems. This is a reflection of the network visualisation webpage, with more detail as to what the differences are.
+
+* ``_summary``, a listing of how the systems can be grouped into sets of identical hardware.
+
+* ``_performance``, the results of analysing the benchmarking data gathered.
+
+* ``_perf_summary``, a subset of the performance metrics, just showing any potentially anomalous data such as where variance is too high, or individual nodes have been found to over/underperform.
 
 .. code-block::
 
-  advise-visualise -output_dir '/review' 
+  advise-visualise -output_dir 'path-to-output_dir' 
+
+The ADVise tool will also launch an interactive `Dash <https://dash.plotly.com/>`_ webpage, which displays the network visualisations, tables with information on the differing hardware attributes, the performance metrics as a range of box-plots, and specifies which individual nodes may be anomalous via box-plot outliers. This can be accessed at ``localhost:8050``.
 
 Note
 ====
