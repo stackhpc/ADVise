@@ -80,7 +80,7 @@ def physical_megaraid_disks(system_list, unique_id):
 
 
 def logical_disks(system_list, unique_id):
-    sets = search_item(system_list, unique_id, "disk", r"[a-z]d(\S+)",
+    sets = search_item(system_list, unique_id, "disk", r"[a-z]d(\S+)|logical",
                        ['simultaneous', 'standalone', 'id', 'serial_number',
                         'SMART/'], [],
                        ['when_failed', 'vendor', 'product', 'health'])
