@@ -363,7 +363,7 @@ class Visualiser():
 
                 net.toggle_physics(False)
                 try:
-                    net.show("%s/results/%s_result.html" %
+                    net.write_html("%s/results/%s_result.html" %
                              (self.output_dir, field.replace(" ", "_")))
                 except Exception as e:
                     print(e)
@@ -414,7 +414,7 @@ class Visualiser():
 
         net.toggle_physics(False)
         try:
-            net.show("%s/results/All_result.html" % self.output_dir)
+            net.write_html("%s/results/All_result.html" % self.output_dir)
         except Exception as e:
             print(e)
 
