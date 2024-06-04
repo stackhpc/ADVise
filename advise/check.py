@@ -225,7 +225,7 @@ def logical_disks_perf(system_list, unique_id, group_number, detail_options,
                        global_params, names_dict, vis, perf_unit,
                        rampup_value=0, current_dir=""):
     have_disk_data = False
-    sets = search_item(system_list, unique_id, "disk", r"[a-z]d(\S+)", [],
+    sets = search_item(system_list, unique_id, "disk", r"[a-z]d(\S+)|nvme.*|logical", [],
                        ['simultaneous', 'standalone'])
     modes = []
 
