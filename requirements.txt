@@ -1,14 +1,13 @@
 # Add your requirements here like:
-numpy
-pandas
-# scipy>=0.9
-python-openstackclient
-python-ironicclient
-requests
-python-ironic-inspector-client
-deepdiff<=3.3.0; python_version < '3.0'
-deepdiff; python_version >= '3.0'
-jinja2
-pyvis
-dash
-plotly
+# numpy
+# pandas
+# python-openstackclient
+# python-ironicclient
+# requests
+# python-ironic-inspector-client
+# deepdiff
+# jinja2
+# pyvis
+# dash
+# plotly
+setuptools
