@@ -12,7 +12,19 @@ authors = [
   {name = "Will Szumski", email = "will@stackhpc.com"},
 ]
 license = {file = "LICENSE"}
-
+dependencies = [
+  "numpy",
+  "pandas",
+  "python-openstackclient",
+  "python-ironicclient",
+  "requests",
+  "python-ironic-inspector-client",
+  "deepdiff",
+  "jinja2",
+  "pyvis",
+  "dash",
+  "plotly",
+]
 classifiers = [
   # Specify the Python versions you support here.
   "Programming Language :: Python :: 3",
