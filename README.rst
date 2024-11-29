@@ -2,15 +2,6 @@
 ADVise
 =============
 
-.. image:: https://travis-ci.com/stackhpc/ADVise.svg?branch=master
-    :target: https://travis-ci.com/stackhpc/ADVise
-
-Dependencies
-============
-
-.. Requires the python `hardware <https://pypi.org/project/hardware/>`_
-.. package to be installed.
-
 Usage
 =====
 
