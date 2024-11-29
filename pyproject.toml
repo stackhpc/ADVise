@@ -17,3 +17,14 @@ classifiers = [
   # Specify the Python versions you support here.
   "Programming Language :: Python :: 3",
 ]
+
+[project.scripts]
+m2-convert = "advise.mungetout.process:run"
+m2-collect = "advise.mungetout.collect:run"
+m2-extract = "advise.mungetout.extract:run"
+m2-diff = "advise.mungetout.diff:run"
+m2-filter = "advise.mungetout.filter:main"
+m2-sink-ironic-name = "advise.mungetout.sinks.name:main"
+m2-sink-run = "advise.mungetout.sinks.run:main"
+advise-process = "advise.advise:main"
+advise-visualise = "advise.visualise:main"
