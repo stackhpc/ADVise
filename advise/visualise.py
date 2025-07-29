@@ -593,7 +593,7 @@ class Visualiser():
                 make_callback_A(field)
                 make_callback_B(field)
 
-        app.run_server(debug=True)
+        app.run(debug=True)
 
     def visualise(self):
         self.generate_table_data()
