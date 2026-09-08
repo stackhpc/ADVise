@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import pkg_resources
+import importlib.metadata
 
 try:
-    __version__ = pkg_resources.get_distribution(__name__).version
+    __version__ = importlib.metadata.version(__name__)
 except:  # noqa E722
     __version__ = 'unknown'
