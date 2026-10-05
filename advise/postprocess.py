@@ -2,14 +2,26 @@ import os
 import sys
 
 
-def print_T1s(T1s):
+def print_T1s(T1s, n):
+    """
+    Args:
+        T1s (set): set to extract Tier 1 fields from.
+        n (string): name of the set (example: "A" or "B").
+    """
     if T1s != set():
+        print(f"{n} has unique T1 fields:")
         for item in sorted(T1s):
             print(" -" + str(item))
 
 
-def print_T2s(T2s):
+def print_T2s(T2s, n):
+    """
+    Args:
+        T2s (set): set to extract Tier 2 fields from.
+        n (string): name of the set (example: "A" or "B").
+    """
     if T2s != set():
+        print(f"{n} has unique T2 fields:")
         T1s = {}
         for item in T2s:
             if item[0] not in T1s:
@@ -22,9 +34,15 @@ def print_T2s(T2s):
                 print("   -" + str(T2))
 
 
-def print_T3s(T3s):
+def print_T3s(T3s, n):
+    """
+    Args:
+        T3s (set): set to extract Tier 3 fields from.
+        n (string): name of the set (example: "A" or "B").
+    """
     if T3s != set():
         T1s = {}
+        print(f"{n} has unique T3 fields:")
         for item in T3s:
             if item[0] not in T1s:
                 T1s[item[0]] = [(item[1], item[2])]
@@ -67,26 +85,14 @@ def compare_two_groups(A, B, name_A, name_B):
         B_T2s.add((item[1], item[2]))
         B_T3s.add((item[1], item[2], item[3]))
 
-    unique_A_T1s = set()
-    for item in A_T1s:
-        if item not in B_T1s:
-            unique_A_T1s.add(item)
-        else:
-            shared_T1s.add(item)
+    unique_A_T1s = A_T1s - B_T1s
+    shared_T1s = A_T1s & B_T1s
 
-    unique_A_T2s = set()
-    for item in A_T2s:
-        if item not in B_T2s:
-            unique_A_T2s.add(item)
-        else:
-            shared_T2s.add(item)
+    unique_A_T2s = A_T2s - B_T2s
+    shared_T2s = A_T1s & B_T1s
 
-    unique_A_T3s = set()
-    for item in A_T3s:
-        if item not in B_T3s:
-            unique_A_T3s.add(item)
-        else:
-            shared_T3s.add(item)
+    unique_A_T3s = A_T3s - B_T3s
+    shared_T3s = A_T3s & B_T3s
 
     sub_unique_A_T2s = set()
     for item in A:
@@ -100,20 +106,11 @@ def compare_two_groups(A, B, name_A, name_B):
                 and (item[1], item[2]) not in unique_A_T2s):
             sub_unique_A_T3s.add((item[1], item[2], item[3]))
 
-    unique_B_T1s = set()
-    for item in B_T1s:
-        if item not in A_T1s:
-            unique_B_T1s.add(item)
+    unique_B_T1s = B_T1s - A_T1s
 
-    unique_B_T2s = set()
-    for item in B_T2s:
-        if item not in A_T2s:
-            unique_B_T2s.add(item)
-
-    unique_B_T3s = set()
-    for item in B_T3s:
-        if item not in A_T3s:
-            unique_B_T3s.add(item)
+    unique_B_T2s = B_T2s - A_T2s
+    
+    unique_B_T3s = B_T3s - A_T3s
 
     sub_unique_B_T2s = set()
     for item in B:
@@ -127,56 +124,28 @@ def compare_two_groups(A, B, name_A, name_B):
                 and (item[1], item[2]) not in unique_B_T2s):
             sub_unique_B_T3s.add((item[1], item[2], item[3]))
 
-    print("Group A:", name_A)
-    print("Group B:", name_B)
-    print()
+    print(f"Group A: {name_A}\nGroup B: {name_B}\n")
+    print(f"{'=' * 80}\n    Differing Fields    \n{'=' * 80}")
+    
+    print("\nTier 1 differences:")
+    print_T1s(unique_A_T1s, "A")
+    print_T1s(unique_B_T1s, "B")
 
-    print("=" * 80)
-    print("    Differing Fields    ")
-    print("=" * 80)
+    print("\nTier 2 differences:")
+    print_T2s(sub_unique_A_T2s, "A")
+    print_T2s(sub_unique_B_T2s, "B")
 
-    print("Tier 1 differences:")
-    if unique_A_T1s != set():
-        print("A has unique T1 fields:")
-        print_T1s(unique_A_T1s)
-    if unique_B_T1s != set():
-        print("B has unique T1 fields:")
-        print_T1s(unique_B_T1s)
-    print()
+    print("\nTier 3 differences:")
+    print_T3s(sub_unique_A_T3s, "A")
+    print_T3s(sub_unique_B_T3s, "B")
 
-    print("Tier 2 differences:")
-    if sub_unique_A_T2s != set():
-        print("A has unique T2 fields:")
-        print_T2s(sub_unique_A_T2s)
-    if sub_unique_B_T2s != set():
-        print("B has unique T2 fields:")
-        print_T2s(sub_unique_B_T2s)
-    print()
-
-    print("Tier 3 differences:")
-    if sub_unique_A_T3s != set():
-        print("A has unique T3 fields:")
-        print_T3s(sub_unique_A_T3s)
-    if sub_unique_B_T3s != set():
-        print("B has unique T3 fields:")
-        print_T3s(sub_unique_B_T3s)
-    print()
-
-    print("=" * 80)
-    print("    Shared Fields    ")
-    print("=" * 80)
-
-    print("Shared Tier 1 fields:")
-    print_T1s(shared_T1s)
-    print()
-
-    print("Shared Tier 2 fields:")
-    print_T2s(shared_T2s)
-    print()
-
-    print("Shared Tier 3 fields:")
-    print_T3s(shared_T3s)
-
+    print(f"\n{'=' * 80}\n    Shared Fields    \n{'=' * 80}")
+    
+    print(f"""
+Shared Tier 1 fields:\n{shared_T1s}
+Shared Tier 2 fields:\n{shared_T2s}
+Shared Tier 3 fields:\n{shared_T3s}
+""")
 
 def paired_comparison(groups, names_dict, title, global_params):
     for groupA in groups:
