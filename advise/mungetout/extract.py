@@ -61,6 +61,10 @@ def parse_args(args):
         metavar='files',
         nargs='+',
         help='files to process')
+    parser.add_argument(
+        '--inspector_version',
+        dest="inspector_version",
+        help="set ironic inspector version data came from - either inbuilt or standalone")
     return parser.parse_args(args)
 
 
@@ -100,7 +104,10 @@ def main(args):
         with open(path, 'r') as f:
             introspection_data = json.load(f)
 
-        extra_data = introspection_data["data"]
+        if args.inspector_version == "inbuilt":
+            extra_data = introspection_data["plugin_data"]["data"]
+        else:
+            extra_data = introspection_data["data"]
 
         extra_path = os.path.join('%s/extra-hardware' % output_dir, '%s.eval' % node_name)
         filtered_path = os.path.join(

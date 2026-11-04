@@ -109,7 +109,7 @@ def compare_two_groups(A, B, name_A, name_B):
     unique_B_T1s = B_T1s - A_T1s
 
     unique_B_T2s = B_T2s - A_T2s
-    
+
     unique_B_T3s = B_T3s - A_T3s
 
     sub_unique_B_T2s = set()
@@ -140,7 +140,6 @@ def compare_two_groups(A, B, name_A, name_B):
     print_T3s(sub_unique_B_T3s, "B")
 
     print(f"\n{'=' * 80}\n    Shared Fields    \n{'=' * 80}")
-    
     print(f"""
 Shared Tier 1 fields:\n{shared_T1s}
 Shared Tier 2 fields:\n{shared_T2s}
